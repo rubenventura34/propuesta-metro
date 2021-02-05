@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Propuesta de Red Metrocentro</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .content {
+            width: 100%;
+            height: 100vh;
+            background-color: #7d7df5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .heatmap {
+            width: 800px;
+            height: 500px;
+            background-color: black;
+        }
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="controls"><button onclick="toggleMarkers()">Mostrar/Ocultar Información</button></div>
+        <div class="heatmap">
+            <div id="map"></div>
+        </div>
+        
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASCAtrGe_39zH59YLoaxEwQgHOywbWyvQ&libraries=visualization"></script>
+    <script>
+        let map, heatmap;
+        let positions = [
+                {
+                    title: "AP01",
+                    channel: "11",
+                    position: new google.maps.LatLng(13.462236545366883, -88.16597911765795),
+                },
+                {
+                    title: "AP02",
+                    channel: "1",
+                    position: new google.maps.LatLng(13.461754502348036, -88.16594317160742),
+                },
+                {
+                    title: "AP03",
+                    channel: "11",
+                    position: new google.maps.LatLng(13.461121027063179, -88.16575193569278),
+                },
+                {
+                    title: "AP04",
+                    channel: "6",
+                    position: new google.maps.LatLng(13.46151747055668, -88.16537228117005),
+                },
+                {
+                    title: "AP05",
+                    channel: "1",
+                    position: new google.maps.LatLng(13.460977274228128, -88.16512435327863),
+                },
+                {
+                    title: "AP06",
+                    channel: "11",
+                    position: new google.maps.LatLng(13.461289601352162, -88.16481291103932),
+                }, 
+            ];
+        let infomarkers = [];
+        let infostate = false;
+        function initMap() {
+            
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 18,
+                center: {lat: 13.461541199901392, lng: -88.16556396591689},
+                mapTypeId: "satellite" 
+            });
+            heatmap = new google.maps.visualization.HeatmapLayer({
+                data: positions.map(p => p.position),
+                map: map,
+                gestureHandling: "none",
+                zoomControl: false,
+            })
+            heatmap.set("radius", 75)
+            for(let i = 0; i < positions.length; i++){
+                let infowindow = new google.maps.InfoWindow({
+                    content: `<b>${positions[i].title}</b><br>
+                              <font color="blue">Canal: <b>${positions[i].channel}</b></font>`
+                });
+                const marker = new google.maps.Marker({
+                    position: positions[i].position,
+                    icon: {
+                        url:"apunifi.png",
+                        anchor: new google.maps.Point(12.5,12)
+                    },
+                    title: positions[i].title,
+                    map: map
+                })
+                infomarkers.push({infowindow, marker})
+            }
+        }
+        function toggleMarkers(){
+            if(infomarkers.length>0){
+                if(infostate) {
+                infomarkers.forEach(infomarker => {
+                        infomarker.infowindow.close()
+                        infostate = false 
+                });
+                } else {
+                    infomarkers.forEach(infomarker => {
+                        infomarker.infowindow.open(map, infomarker.marker)
+                        infostate = true
+                    })
+                }
+            }
+        }
+        window.onload = () => {
+            initMap();
+        }
+    </script>
+</body>
+</html>
