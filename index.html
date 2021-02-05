@@ -108,6 +108,18 @@
                 })
                 infomarkers.push({infowindow, marker})
             }
+            google.maps.event.addListener(map, 'zoom_changed', () => {
+                zoom = map.getZoom();
+                if(zoom==19){
+                    heatmap.set('radius', 140);
+                } 
+                if(zoom==18){
+                    heatmap.set('radius', 75);
+                }
+                if(zoom==17){
+                    heatmap.set('radius', 35);
+                }
+            })
         }
         function toggleMarkers(){
             if(infomarkers.length>0){
